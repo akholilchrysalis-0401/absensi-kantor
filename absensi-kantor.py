@@ -188,13 +188,13 @@ if mode == "👤 Absen Karyawan":
             if hari_ini.empty:
                 st.info("Anda belum absen masuk hari ini.")
                 foto = st.camera_input("Ambil foto selfie untuk absen MASUK", key="cam_masuk")
+                lokasi = st.selectbox("Pilih lokasi absen", DAFTAR_LOKASI, key="lok_masuk")
                 if st.button("Kirim Absen Masuk", type="primary") and foto is not None:
-                    with st.spinner("Mengirim absen & mengunggah foto..."):
+                    with st.spinner("Mengirim absen..."):
                         jam = now_str()
                         status = "Hadir" if _wib().time() <= BATAS_MASUK else "Terlambat"
-                        lokasi = get_gps()
                         link_foto = upload_foto(foto.getvalue(), f"{nip}_{today_str()}_masuk.jpg")
-                        append_absen([today_str(), nip, nama, divisi, jam, "", status, lokasi, link_foto, "", ""])
+                        append_absen([today_str(), nip, nama, divisi, jam, "", status, lokasi, link_foto, "", ""]) 
                     st.success(f"✅ Absen masuk tercatat pukul {jam} — Status: {status}")
                     st.rerun()
             elif clean(hari_ini.iloc[0]["jam_pulang"]) == "":
