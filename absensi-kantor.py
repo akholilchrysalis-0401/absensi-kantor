@@ -97,17 +97,19 @@ def update_pulang(tanggal, nip, jam_pulang, foto_link):
             return
 
 # ---------- Upload Foto ke Google Drive ----------
+
+## https://docs.google.com/spreadsheets/d/1rsTGJS2H6uhqh84eQmlLn_uZVzopUWNxPqU_MpT9H5c/edit?gid=1098156469#gid=1098156469
+
+FOTO_FOLDER_ID = "1rsTGJS2H6uhqh84eQmlLn_uZVzopUWNxPqU_MpT9H5c"  # ganti dengan ID folder yang di-share
+
 def upload_foto(image_bytes, filename):
     try:
         service = build("drive", "v3", credentials=get_creds(), cache_discovery=False)
-        res = service.files().list(q="name='Foto Absensi' and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                                   spaces="drive", fields="files(id)").execute()
-        items = res.get("files", [])
-        folder_id = items[0]["id"] if items else service.files().create(
-            body={"name": "Foto Absensi", "mimeType": "application/vnd.google-apps.folder"}, fields="id").execute()["id"]
         media = MediaIoBaseUpload(io.BytesIO(image_bytes), mimetype="image/jpeg", resumable=False)
-        f = service.files().create(body={"name": filename, "parents": [folder_id]},
-                                   media_body=media, fields="id,webViewLink").execute()
+        f = service.files().create(
+            body={"name": filename, "parents": [FOTO_FOLDER_ID]},
+            media_body=media, fields="id,webViewLink"
+        ).execute()
         service.permissions().create(fileId=f["id"], body={"type": "anyone", "role": "reader"}).execute()
         return f.get("webViewLink", "")
     except Exception as e:
