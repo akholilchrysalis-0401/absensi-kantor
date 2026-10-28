@@ -118,12 +118,24 @@ def upload_foto(image_bytes, filename):
         return f"Gagal upload: {e}"
 
 # ---------- Lokasi GPS ----------
+
+import time
+
 def get_gps():
     try:
         from streamlit_js_eval import streamlit_js_eval
-        loc = streamlit_js_eval(js_expressions="navigator.geolocation ? new Promise(r=>navigator.geolocation.getCurrentPosition(p=>r(p.coords.latitude+', '+p.coords.longitude), e=>r('Izin lokasi ditolak'))) : 'GPS tidak didukung'")
-        if loc and isinstance(loc, str):
-            return loc
+        # Minta lokasi GPS (async) → simpan di window._gps
+        streamlit_js_eval(js_expressions=(
+            "navigator.geolocation ? "
+            "(navigator.geolocation.getCurrentPosition("
+            "p=>{window._gps=p.coords.latitude+', '+p.coords.longitude}, "
+            "e=>{window._gps='Izin lokasi ditolak'}), 'meminta') "
+            ": 'GPS tidak didukung'"
+        ))
+        time.sleep(3)  # tunggu GPS menangkap sinyal
+        hasil = streamlit_js_eval(js_expressions="window._gps || 'Tidak terdeteksi'")
+        if hasil and isinstance(hasil, str) and hasil not in ("meminta", "Tidak terdeteksi"):
+            return hasil
     except Exception:
         pass
     return "Tidak terdeteksi"
