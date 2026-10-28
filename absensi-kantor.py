@@ -200,7 +200,7 @@ if mode == "👤 Absen Karyawan":
             if hari_ini.empty:
                 st.info("Anda belum absen masuk hari ini.")
                 foto = st.camera_input("Ambil foto selfie untuk absen MASUK", key="cam_masuk")
-                lokasi = st.selectbox("Pilih lokasi absen", DAFTAR_LOKASI, key="lok_masuk")
+               ## lokasi = st.selectbox("Pilih lokasi absen", DAFTAR_LOKASI, key="lok_masuk") ---- ini dihilangkan
                 if st.button("Kirim Absen Masuk", type="primary") and foto is not None:
                     with st.spinner("Mengirim absen..."):
                         jam = now_str()
