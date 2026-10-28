@@ -98,9 +98,9 @@ def update_pulang(tanggal, nip, jam_pulang, foto_link):
 
 # ---------- Upload Foto ke Google Drive ----------
 
-# https://drive.google.com/drive/u/0/folders/16jSCF9eKYW-etI3LPwc_uIqS9PEIfGBn
+# https://drive.google.com/drive/folders/16jSCF9eKYW-etI3LPwc_uIqS9PEIfGBn?usp=sharing
 
-FOTO_FOLDER_ID = "https://drive.google.com/drive/u/0/folders/16jSCF9eKYW-etI3LPwc_uIqS9PEIfGBn"  # ganti dengan ID folder yang di-share
+FOTO_FOLDER_ID = "16jSCF9eKYW-etI3LPwc_uIqS9PEIfGBn"  # ganti dengan ID folder yang di-share
 
 def upload_foto(image_bytes, filename):
     try:
