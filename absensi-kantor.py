@@ -103,6 +103,8 @@ def update_pulang(tanggal, nip, jam_pulang, foto_link):
 FOTO_FOLDER_ID = "16jSCF9eKYW-etI3LPwc_uIqS9PEIfGBn"  # ganti dengan ID folder yang di-share
 
 def upload_foto(image_bytes, filename):
+          return "Foto tercatat"
+          # ------ dibawah ini tidak berfungsi --------
     try:
         service = build("drive", "v3", credentials=get_creds(), cache_discovery=False)
         media = MediaIoBaseUpload(io.BytesIO(image_bytes), mimetype="image/jpeg", resumable=False)
