@@ -97,45 +97,29 @@ def update_pulang(tanggal, nip, jam_pulang, foto_link):
             return
 
 # ---------- Upload Foto ke Google Drive ----------
-
-# https://drive.google.com/drive/folders/16jSCF9eKYW-etI3LPwc_uIqS9PEIfGBn?usp=sharing
-
-FOTO_FOLDER_ID = "16jSCF9eKYW-etI3LPwc_uIqS9PEIfGBn"  # ganti dengan ID folder yang di-share
-
 def upload_foto(image_bytes, filename):
-    return "Foto tercatat"
-          # ------ dibawah ini tidak berfungsi --------
     try:
         service = build("drive", "v3", credentials=get_creds(), cache_discovery=False)
+        res = service.files().list(q="name='Foto Absensi' and mimeType='application/vnd.google-apps.folder' and trashed=false",
+                                   spaces="drive", fields="files(id)").execute()
+        items = res.get("files", [])
+        folder_id = items[0]["id"] if items else service.files().create(
+            body={"name": "Foto Absensi", "mimeType": "application/vnd.google-apps.folder"}, fields="id").execute()["id"]
         media = MediaIoBaseUpload(io.BytesIO(image_bytes), mimetype="image/jpeg", resumable=False)
-        f = service.files().create(
-            body={"name": filename, "parents": [FOTO_FOLDER_ID]},
-            media_body=media, fields="id,webViewLink"
-        ).execute()
+        f = service.files().create(body={"name": filename, "parents": [folder_id]},
+                                   media_body=media, fields="id,webViewLink").execute()
         service.permissions().create(fileId=f["id"], body={"type": "anyone", "role": "reader"}).execute()
         return f.get("webViewLink", "")
     except Exception as e:
         return f"Gagal upload: {e}"
 
 # ---------- Lokasi GPS ----------
-
-import time
-
 def get_gps():
     try:
         from streamlit_js_eval import streamlit_js_eval
-        # Minta lokasi GPS (async) → simpan di window._gps
-        streamlit_js_eval(js_expressions=(
-            "navigator.geolocation ? "
-            "(navigator.geolocation.getCurrentPosition("
-            "p=>{window._gps=p.coords.latitude+', '+p.coords.longitude}, "
-            "e=>{window._gps='Izin lokasi ditolak'}), 'meminta') "
-            ": 'GPS tidak didukung'"
-        ))
-        time.sleep(3)  # tunggu GPS menangkap sinyal
-        hasil = streamlit_js_eval(js_expressions="window._gps || 'Tidak terdeteksi'")
-        if hasil and isinstance(hasil, str) and hasil not in ("meminta", "Tidak terdeteksi"):
-            return hasil
+        loc = streamlit_js_eval(js_expressions="navigator.geolocation ? new Promise(r=>navigator.geolocation.getCurrentPosition(p=>r(p.coords.latitude+', '+p.coords.longitude), e=>r('Izin lokasi ditolak'))) : 'GPS tidak didukung'")
+        if loc and isinstance(loc, str):
+            return loc
     except Exception:
         pass
     return "Tidak terdeteksi"
@@ -200,14 +184,13 @@ if mode == "👤 Absen Karyawan":
             if hari_ini.empty:
                 st.info("Anda belum absen masuk hari ini.")
                 foto = st.camera_input("Ambil foto selfie untuk absen MASUK", key="cam_masuk")
-               ## lokasi = st.selectbox("Pilih lokasi absen", DAFTAR_LOKASI, key="lok_masuk") ---- ini dihilangkan
                 if st.button("Kirim Absen Masuk", type="primary") and foto is not None:
-                    with st.spinner("Mengirim absen..."):
+                    with st.spinner("Mengirim absen & mengunggah foto..."):
                         jam = now_str()
                         status = "Hadir" if _wib().time() <= BATAS_MASUK else "Terlambat"
-                        lokasi = get_gps() #--- tambahan -----
+                        lokasi = get_gps()
                         link_foto = upload_foto(foto.getvalue(), f"{nip}_{today_str()}_masuk.jpg")
-                        append_absen([today_str(), nip, nama, divisi, jam, "", status, lokasi, link_foto, "", ""]) 
+                        append_absen([today_str(), nip, nama, divisi, jam, "", status, lokasi, link_foto, "", ""])
                     st.success(f"✅ Absen masuk tercatat pukul {jam} — Status: {status}")
                     st.rerun()
             elif clean(hari_ini.iloc[0]["jam_pulang"]) == "":
