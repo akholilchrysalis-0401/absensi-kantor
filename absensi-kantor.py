@@ -205,6 +205,7 @@ if mode == "👤 Absen Karyawan":
                     with st.spinner("Mengirim absen..."):
                         jam = now_str()
                         status = "Hadir" if _wib().time() <= BATAS_MASUK else "Terlambat"
+                        lokasi = get_gps() #--- tambahan -----
                         link_foto = upload_foto(foto.getvalue(), f"{nip}_{today_str()}_masuk.jpg")
                         append_absen([today_str(), nip, nama, divisi, jam, "", status, lokasi, link_foto, "", ""]) 
                     st.success(f"✅ Absen masuk tercatat pukul {jam} — Status: {status}")
