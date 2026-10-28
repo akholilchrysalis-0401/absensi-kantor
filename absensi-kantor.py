@@ -1,6 +1,6 @@
 import io
 import json
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 import pandas as pd
 import streamlit as st
@@ -129,11 +129,9 @@ def clean(v):
     if v is None or pd.isna(v): return ""
     return str(v).strip()
 
-def today_str():
-    return date.today().isoformat()
-
-def now_str():
-    return datetime.now().strftime("%H:%M:%S")
+def _wib(): return datetime.utcnow() + timedelta(hours=7)
+def today_str(): return _wib().date().isoformat()
+def now_str(): return _wib().strftime("%H:%M:%S")
 
 # ================= APLIKASI =================
 st.title("📋 Absensi Karyawan")
