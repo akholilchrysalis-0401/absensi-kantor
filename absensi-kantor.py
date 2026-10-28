@@ -101,7 +101,7 @@ def update_pulang(tanggal, nip, jam_pulang, foto_link):
 ## https://docs.google.com/spreadsheets/d/1rsTGJS2H6uhqh84eQmlLn_uZVzopUWNxPqU_MpT9H5c/edit?gid=1098156469#gid=1098156469
 # https://drive.google.com/drive/u/0/folders/16jSCF9eKYW-etI3LPwc_uIqS9PEIfGBn
 
-FOTO_FOLDER_ID = "https://drive.google.com/drive/u/0/folders/16jSCF9eKYW-etI3LPwc_uIqS9PEIfGBn"  # ganti dengan ID folder yang di-share
+FOTO_FOLDER_ID = "16jSCF9eKYW-etI3LPwc_uIqS9PEIfGBn"  # ganti dengan ID folder yang di-share
 
 def upload_foto(image_bytes, filename):
     try:
