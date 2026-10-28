@@ -187,7 +187,7 @@ if mode == "👤 Absen Karyawan":
                 if st.button("Kirim Absen Masuk", type="primary") and foto is not None:
                     with st.spinner("Mengirim absen & mengunggah foto..."):
                         jam = now_str()
-                        status = "Hadir" if datetime.now().time() <= BATAS_MASUK else "Terlambat"
+                        status = "Hadir" if _wib().time() <= BATAS_MASUK else "Terlambat"
                         lokasi = get_gps()
                         link_foto = upload_foto(foto.getvalue(), f"{nip}_{today_str()}_masuk.jpg")
                         append_absen([today_str(), nip, nama, divisi, jam, "", status, lokasi, link_foto, "", ""])
